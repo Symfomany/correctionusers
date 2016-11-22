@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script src="js/main.js"></script>
+</head>
+
+<body ng-app="app">
+
+    <div class="container">
+
+        <div id="carte" style="width: 400px; height: 300px"></div>
+
+
+        <section ng-controller="mainCtrl">
+            <p>
+                {{ moyenneAge() }} ans
+            </p>
+
+
+            <div class="col-md-12" id="champsTri">
+                <div ng-init="tri=['Le plus jeune','Le plus vieux']">
+                    <label>tri du tableau</label>
+                    <select ng-model="triUser">
+                        <option value="'age'">Age plus vieux</option>
+                        <option value="'-age'">Age plus jeune</option>
+                    </select>
+                </div>
+
+                <div>
+                    <input ng-model="majeur" type="checkbox"></label>UNiquement les majeurs</label>
+                </div>
+
+
+                <div class="col-md-4">
+                    <label>Filtre par ville :</label>
+                    <div class="checkbox">
+                        <label class="radio-inline">
+            <input type="radio" name="inlineRadioOptions" ng-model="citySelected" value="Paris"> Paris
+          </label>
+                        <label class="radio-inline">
+            <input type="radio" name="inlineRadioOptions" ng-model="citySelected" value="Marseille"> Marseille
+          </label>
+                        <label class="radio-inline">
+            <input type="radio" name="inlineRadioOptions" ng-model="citySelected" value="Lyon"> Lyon
+          </label>
+                        <label class="radio-inline">
+            <input type="radio" name="inlineRadioOptions" ng-model="citySelected" value="all"> Toutes
+          </label>
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-8">
+                    <p>Nombre de personnage à afficher {{ sliderValue }} : </p>
+                    <input type="range" min="0" max="{{ users.length }}" step="1" ng-model="sliderValue">
+                </div>
+
+
+
+
+                <ul>
+                    <li ng-repeat="user in users|orderBy:triUser|lowerThan:majeur | whatCity:citySelected | limitTo:sliderValue  track by user.nom">
+                        <button class='btn btn-danger' type="button" name="button" ng-click='suppr(user)'>Supprimer</button>
+
+
+                        <p ng-if='user.sexe === true'>Homme</p>
+                        <p ng-if='user.sexe === false'>Femme</p>
+
+                        <ul>
+                            <li>
+                                <p ng-repeat="sport in user.sports">{{ sport }}</p>
+                            </li>
+                        </ul>
+
+                        <p>{{user.nom}} {{user.prenom}} </p>
+                        <p> Habite à : {{user.ville}} </p>
+                        <p> {{user.age}} ans </p>
+
+
+
+                        <img ng-src="{{user.img}}" width='100' height='100' alt="" />
+                    </li>
+                </ul>
+
+                <hr />
+
+                <div class="">
+
+                    <h3> Ajouter un utilisateur</h3>
+
+                    <form ng-submit='ajouterUser()'>
+                        <div class="civilite">
+
+                            <div class="form-group">
+                                <label for="Homme">Homme</label>
+                                <input id='Homme' ng-value="true" type="radio" name="sexe" ng-model='sexe'>
+                                <label for="Femme">Femme</label>
+                                <input id='Femme' type="radio" ng-value="false" name="sexe" ng-model='sexe'>
+                            </div>
+                            <div class="form-group">
+                                <input placeholder="nom" type="text" name="nom" ng-model='nom'>
+                            </div>
+                            <div id="lienImage" class="form-group">
+                                <input class="form-control" type="text" ng-model="avatar" name="avatar" placeholder="votre avatar" ng-blur="imgControl()">
+                                <img ng-model="image" ng-src="{{avatar}}" title="mon avatar" alt="mon avatar" />
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-control" type="text" placeholder="prenom" name="prenom" ng-model='prenom'>
+                            </div>
+                        </div>
+
+
+                        <div class="desc">
+
+
+                            <div class="form-group col-md-8 col-md-offset-2">
+                                <p>Quels sports pratiquez-vous ?</p>
+                                <div class="row">
+                                    <input type="checkbox" ng-model="checkSport.foot" value="foot" id="foot" name="foot">
+                                    <label for="foot">Foot</label>
+                                    <input type="checkbox" ng-model="checkSport.basket" value="Basket" id="Basket" name="Basket">
+                                    <label for="Basket">Basket</label>
+                                    <input type="checkbox" ng-model="checkSport.baseball" value="Baseball" id="Baseball" name="Baseball">
+                                    <label for="Baseball">Baseball</label>
+                                </div>
+                                <div class="row">
+                                    <input type="checkbox" ng-model="checkSport.rugby" value="Rugby" id="Rugby" name="Rugby">
+                                    <label for="Rugby">Rugby</label>
+                                    <input type="checkbox" ng-model="checkSport.handball" value="Handball" id="Handball" name="Handball">
+                                    <label for="Handball">Handball</label>
+                                    <input type="checkbox" ng-model="checkSport.coding" value="coding" id="coding" name="coding">
+                                    <label for="coding">Coding</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-control" type="text" placeholder="age" name="age" ng-model='age'>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-control" type="text" placeholder='ville' name="vile" ng-model='ville'>
+                            </div>
+
+                            <div class='form-group'>
+                                <input class="form-control" type="url" placeholder="image" name="image" ng-model='img' alt="">
+                            </div>
+
+                        </div>
+                        <div class="sub">
+
+
+                            <button class='btn-primary' type="submit" name="button">Enregistrer cet utilisateur</button>
+                        </div>
+
+                    </form>
+                </div>
+
+
+
+        </section>
+        </div>
+
+
+
+
+
+
+
+
+</body>
+
+</html>
